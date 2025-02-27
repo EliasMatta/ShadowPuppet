@@ -24,18 +24,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Check if player is grounded
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-
-        // Get movement input only if grounded
-        if (isGrounded)
-        {
-            moveInput = Input.GetAxisRaw("Horizontal");
-        }
-        else
-        {
-            moveInput = 0f; // Prevent movement in air
-        }
+        // Get movement input
+        moveInput = Input.GetAxisRaw("Horizontal");
 
         // Jump input
         if (Input.GetButtonDown("Jump") && isGrounded)
@@ -46,8 +36,11 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Move the player only when grounded
+        // Move the player
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+
+        // Check if player is grounded
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         // Handle jumping
         if (jumpPressed)
