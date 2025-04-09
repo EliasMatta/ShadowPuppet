@@ -1,8 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-public class ShadowObject : MonoBehaviour
+public class ModeObject : MonoBehaviour
 {
+    public bool isShadow; // Set to true for shadow objects, false for normal objects
     private SpriteRenderer spriteRenderer;
     private Collider2D objectCollider;
     public float fadeDuration = 0.5f;
@@ -11,17 +12,20 @@ public class ShadowObject : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         objectCollider = GetComponent<Collider2D>();
-        // Initially hidden in normal mode
-        SetShadowVisibility(false, instant: true);
+        // Initially, normal objects are visible, shadow objects are hidden
+        bool initialVisible = !isShadow;
+        SetVisibility(initialVisible, instant: true);
     }
 
-    public void ToggleVisibility(bool isVisible)
+    public void ToggleVisibility(bool isInShadowMode)
     {
-        StartCoroutine(FadeShadowObject(isVisible));
-        objectCollider.enabled = isVisible;
+        // Visible if the object's mode matches the current mode
+        bool shouldBeVisible = (isShadow == isInShadowMode);
+        StartCoroutine(FadeObject(shouldBeVisible));
+        objectCollider.enabled = shouldBeVisible;
     }
 
-    private IEnumerator FadeShadowObject(bool fadeIn)
+    private IEnumerator FadeObject(bool fadeIn)
     {
         float startAlpha = spriteRenderer.color.a;
         float targetAlpha = fadeIn ? 1f : 0f;
@@ -44,7 +48,7 @@ public class ShadowObject : MonoBehaviour
         spriteRenderer.color = color;
     }
 
-    private void SetShadowVisibility(bool isVisible, bool instant = false)
+    private void SetVisibility(bool isVisible, bool instant = false)
     {
         if (instant)
         {
@@ -52,7 +56,7 @@ public class ShadowObject : MonoBehaviour
         }
         else
         {
-            StartCoroutine(FadeShadowObject(isVisible));
+            StartCoroutine(FadeObject(isVisible));
         }
         objectCollider.enabled = isVisible;
     }
